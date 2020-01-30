@@ -3,15 +3,15 @@ use std::fs::File;
 use std::io::prelude::*;
 
 mod token {
-    pub const gt: char = '>';
-    pub const lt: char = '<';
-    pub const plus: char = '+';
-    pub const minus: char = '-';
-    pub const period: char = '.';
-    pub const comma: char = ',';
-    pub const lbracket: char = '[';
-    pub const rbracket: char = ']';
-    pub const eof: char = 0 as char;
+    pub const GT: char = '>';
+    pub const LT: char = '<';
+    pub const PLUS: char = '+';
+    pub const MINUS: char = '-';
+    pub const PERIOD: char = '.';
+    pub const COMMA: char = ',';
+    pub const LBRACKET: char = '[';
+    pub const RBRACKET: char = ']';
+    pub const EOF: char = 0 as char;
 }
 
 struct Brainfuck {
@@ -56,31 +56,31 @@ impl Brainfuck {
         let c = self.read_char();
         let mut result = true;
         match c {
-            token::gt => {
+            token::GT => {
                 self.eval_gt();
             }
-            token::lt => {
+            token::LT => {
                 self.eval_lt();
             }
-            token::plus => {
+            token::PLUS => {
                 self.eval_plus();
             }
-            token::minus => {
+            token::MINUS => {
                 self.eval_minus();
             }
-            token::period => {
+            token::PERIOD => {
                 self.eval_period();
             }
-            token::comma => {
+            token::COMMA => {
                 self.eval_comma();
             }
-            token::lbracket => {
+            token::LBRACKET => {
                 self.eval_lbracket();
             }
-            token::rbracket => {
+            token::RBRACKET => {
                 self.eval_rbracket();
             }
-            token::eof => {
+            token::EOF => {
                 result = false;
             }
             _ => {
@@ -99,9 +99,6 @@ impl Brainfuck {
 
     fn eval_lt(&mut self) {
         self.buf_ptr -= 1;
-        if self.buf_ptr < 0 {
-            panic!("The pointer has gone out of memory");
-        }
     }
 
     fn eval_plus(&mut self) {
@@ -138,21 +135,20 @@ impl Brainfuck {
 }
 
 fn main() {
-    let mut filename = String::new();
     let args: Vec<String> = env::args().collect();
     if args.len() > 1 {
-        filename = args[1].clone();
+        let filename = args[1].clone();
+
+        let mut f = File::open(filename).expect("file not found");
+
+        let mut source = String::new();
+        f.read_to_string(&mut source)
+            .expect("something went wrong reading the file");
+
+        let mut bf = Brainfuck::new(source);
+        bf.eval();
     } else {
         println!("please input source file.");
         return;
     }
-
-    let mut f = File::open(filename).expect("file not found");
-
-    let mut source = String::new();
-    f.read_to_string(&mut source)
-        .expect("something went wrong reading the file");
-
-    let mut bf = Brainfuck::new(source);
-    bf.eval();
 }
